@@ -1,55 +1,36 @@
 version: '3.7'
 
 services:
-    frontend:
-        container_name: my-frontend
-        build:
-            context: "/Users/daipablandine/Documents/Devops/frontend"
-        ports:
-            - "8089:80"
-        networks:
-            - my-network
-        depends_on:
-            - httpd
-
-    backend:
-        container_name: my-backend
-        build:
-            context: "/Users/daipablandine/Documents/Devops/simple-api-student-main"
-        ports:
-            - "8087:80"
-        networks:
-            - my-network
-        depends_on:
+  backend:
+    build:
+      context: ./Backend/simple-api-student-main
+    networks:
+            - app-network
+    depends_on:
             - database
+    container_name : my-running-studentjava-app
 
-    database:
-        build:
-            context: "/Users/daipablandine/Documents/Devops"
-        container_name: my-database
-        environment:
-            POSTGRES_PASSWORD: pwd
-        networks:
-            - my-network
-        volumes:
-            - docker-volume:/var/lib/postgresql/data
+  database:
+    build:
+        context: ./Database
+    networks:
+        - app-network
+    volumes:
+        - my_volume:/var/lib/postgresql/data
+    container_name : my-postgres
 
-    httpd:
-        container_name: my-httpd
+  httpd:
         build:
-            context: "/Users/daipablandine/Documents/Devops/http"
+            context: ./Http_server
         ports:
             - "80:80"
         networks:
-            - my-network
+            - app-network
         depends_on:
             - backend
-            - database
+        container_name : my-apache-container
 
 networks:
-    my-network:
-
+    app-network:
 volumes:
-    docker-volume:
-
-
+    my_volume:
